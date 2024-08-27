@@ -4,27 +4,29 @@ declare(strict_types=1);
 
 namespace Src\Category\Infrastructure\Persistence;
 
+use PDO;
 use Src\Category\Domain\Model\Category;
 use Src\Shader\Infrastructure\Database\Conexion;
 use Src\Category\Domain\Repository\CategoryRepositoryInterface;
 
 class MySQLCategoryRespository implements CategoryRepositoryInterface
 {
-    public function getAll(array $params = []): array
+    private PDO $pdo;
+    public function __construct()
     {
         $conexion = new Conexion();
-        $pdo = $conexion->getConexion();
-
-        // Construir la consulta base
+        $this->pdo = $conexion->getConexion();
+    }
+    public function getAll(array $params = []): array
+    {
+        $pdo = $this->pdo;
         $query = 'SELECT id, name, description FROM categories';
 
-        // Agregar filtros si se proporcionan
         $filters = $this->buildFilters($params);
         if (!empty($filters['conditions'])) {
             $query .= ' WHERE ' . implode(' AND ', $filters['conditions']);
         }
 
-        // Preparar y ejecutar la consulta
         $statement = $pdo->prepare($query);
         foreach ($filters['bindings'] as $placeholder => $value) {
             $statement->bindValue($placeholder, $value);
@@ -32,7 +34,6 @@ class MySQLCategoryRespository implements CategoryRepositoryInterface
         $statement->execute();
         $results = $statement->fetchAll();
 
-        // Mapear los resultados a objetos User
         $categories = [];
         foreach ($results as $row) {
             $categories[] = new Category(
@@ -47,21 +48,14 @@ class MySQLCategoryRespository implements CategoryRepositoryInterface
 
     public function getById(int $categoryId): ?Category
     {
-        $conexion = new Conexion();
-        $pdo = $conexion->getConexion();
-
-        // Consulta para obtener el usuario por ID
+        $pdo = $this->pdo;
         $query = 'SELECT id, name, description FROM categories WHERE id = :id';
-
-        // Preparar y ejecutar la consulta
         $statement = $pdo->prepare($query);
         $statement->bindValue(':id', $categoryId, \PDO::PARAM_INT);
         $statement->execute();
 
-        // Obtener el resultado
         $row = $statement->fetch();
 
-        // Mapear el resultado a un objeto Category o retornar null si no se encuentra el usuario
         if ($row) {
             return new Category(
                 id: $row['id'],
@@ -75,17 +69,29 @@ class MySQLCategoryRespository implements CategoryRepositoryInterface
 
     public function register(string $name, string $description): void
     {
-        // Implementación para registrar un usuario
+        $pdo = $this->pdo;
+        $stmt = $pdo->prepare('INSERT INTO categories (name, description) VALUES (:name, :description)');
+        $stmt->bindValue(':name', $name, PDO::PARAM_STR);
+        $stmt->bindValue(':description', $description, PDO::PARAM_STR);
+        $stmt->execute();
     }
 
     public function update(int $categoryId, string $name, string $description): void
     {
-        // Implementación para actualizar la contraseña de un usuario
+        $pdo = $this->pdo;
+        $stmt = $pdo->prepare('UPDATE categories SET name = :name, description = :description WHERE id = :id');
+        $stmt->bindValue(':id', $categoryId, \PDO::PARAM_INT);
+        $stmt->bindValue(':name', $name);
+        $stmt->bindValue(':description', $description);
+        $stmt->execute();
     }
 
     public function delete(int $categoryId): void
     {
-        // Implementación para eliminar un usuario
+        $pdo  = $this->pdo;
+        $stmt = $pdo->prepare('DELETE FROM categories WHERE id = :id');
+        $stmt->bindValue(':id', $categoryId, \PDO::PARAM_INT);
+        $stmt->execute();
     }
 
     private function buildFilters(array $params): array

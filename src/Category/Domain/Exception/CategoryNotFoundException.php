@@ -8,8 +8,10 @@ use Src\Shader\Domain\Exception\BaseException;
 
 class CategoryNotFoundException extends BaseException
 {
-    public function __construct()
+    public function __construct(
+        int $id,
+    )
     {
-        parent::__construct("Category not found.", 404);
+        parent::__construct("La categoría con ID {$id} no existe.", 404);
     }
 }
