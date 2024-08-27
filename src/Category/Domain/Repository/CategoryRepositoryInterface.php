@@ -10,11 +10,11 @@ interface CategoryRepositoryInterface
 {
     /**
      * Summary of getAll
-     * @return User[]  Array of User objects
+     * @return Category[]  Array of Category objects
      */
     public function getAll(array $params = []): array;
-    public function getById(int $userId): ?Category;
+    public function getById(int $categoryId): ?Category;
     public function register(string $name, string $description): void;
-    public function update(int $userId, string $name, string $description): void;
-    public function delete(int $userId): void;
+    public function update(int $categoryId, string $name, string $description): void;
+    public function delete(int $categoryId): void;
 }

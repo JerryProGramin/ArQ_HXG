@@ -10,6 +10,6 @@ class CategoryNotFoundException extends BaseException
 {
     public function __construct()
     {
-        parent::__construct("User not found.", 404);
+        parent::__construct("Category not found.", 404);
     }
 }

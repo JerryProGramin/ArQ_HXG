@@ -33,19 +33,19 @@ class MySQLCategoryRespository implements CategoryRepositoryInterface
         $results = $statement->fetchAll();
 
         // Mapear los resultados a objetos User
-        $users = [];
+        $categories = [];
         foreach ($results as $row) {
-            $users[] = new Category(
+            $categories[] = new Category(
                 id: $row['id'],
                 name: $row['name'],
                 description: $row['description']
             );
         }
 
-        return $users;
+        return $categories;
     }
 
-    public function getById(int $userId): ?Category
+    public function getById(int $categoryId): ?Category
     {
         $conexion = new Conexion();
         $pdo = $conexion->getConexion();
@@ -55,13 +55,13 @@ class MySQLCategoryRespository implements CategoryRepositoryInterface
 
         // Preparar y ejecutar la consulta
         $statement = $pdo->prepare($query);
-        $statement->bindValue(':id', $userId, \PDO::PARAM_INT);
+        $statement->bindValue(':id', $categoryId, \PDO::PARAM_INT);
         $statement->execute();
 
         // Obtener el resultado
         $row = $statement->fetch();
 
-        // Mapear el resultado a un objeto User o retornar null si no se encuentra el usuario
+        // Mapear el resultado a un objeto Category o retornar null si no se encuentra el usuario
         if ($row) {
             return new Category(
                 id: $row['id'],
@@ -78,12 +78,12 @@ class MySQLCategoryRespository implements CategoryRepositoryInterface
         // Implementación para registrar un usuario
     }
 
-    public function update(int $userId, string $name, string $description): void
+    public function update(int $categoryId, string $name, string $description): void
     {
         // Implementación para actualizar la contraseña de un usuario
     }
 
-    public function delete(int $userId): void
+    public function delete(int $categoryId): void
     {
         // Implementación para eliminar un usuario
     }
