@@ -81,8 +81,8 @@ class MySQLCategoryRespository implements CategoryRepositoryInterface
         $pdo = $this->pdo;
         $stmt = $pdo->prepare('UPDATE categories SET name = :name, description = :description WHERE id = :id');
         $stmt->bindValue(':id', $categoryId, \PDO::PARAM_INT);
-        $stmt->bindValue(':name', $name);
-        $stmt->bindValue(':description', $description);
+        $stmt->bindValue(':name', $name, PDO::PARAM_STR);
+        $stmt->bindValue(':description', $description, PDO::PARAM_STR);
         $stmt->execute();
     }
 

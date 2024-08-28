@@ -75,7 +75,14 @@ class MySQLUserRespository implements UserRepositoryInterface
 
     public function register(string $email, string $password): void
     {
-        // Implementación para registrar un usuario
+        $conexion = new Conexion();
+        $pdo = $conexion->getConexion();
+
+        $query = 'INSERT INTO users (email, password) VALUES (:email, :password)';
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':password', $password);
+        $stmt->execute();
     }
 
     public function updateEmail(int $userId, string $email): void

@@ -7,6 +7,7 @@ namespace Src\User\Infrastructure\Controller;
 use Core\Container;
 use Src\User\Aplication\UseCase\GetUser;
 use Src\User\Aplication\UseCase\GetUsers;
+use Src\User\Aplication\UseCase\RegisterUser;
 use Src\Shader\Infrastructure\Utils\QueryParams;
 
 class UserController
@@ -32,5 +33,10 @@ class UserController
         $getUser = $this->container->get(GetUser::class);
         $user = $getUser->execute($userId);
         echo json_encode($user);
+    }
+
+    public function store()
+    {
+        
     }
 }

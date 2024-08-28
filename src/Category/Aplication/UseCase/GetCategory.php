@@ -16,8 +16,9 @@ class GetCategory
     public function execute(int $categoryId): CategoryResponse
     {
         $category = $this->categoryRepository->getById($categoryId);
-        if (!$category)
-            throw new CategoryNotFoundException();
+        if (!$category) {
+            throw new CategoryNotFoundException($categoryId);
+        }
         return new CategoryResponse(
             id: $category->getId(),
             name: $category->getName(),

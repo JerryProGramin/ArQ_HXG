@@ -10,11 +10,13 @@ class UserRequest
         public string $email,
         public string $password,
     ) {
-        $this->validateEmail($email);
+        //$this->validateEmail($email);
     }
 
-    public function validateEmail(string $email): void
-    {
-        // validamos el formato: tiene @, tiene un dominio, dominios permitidos
-    }
+    // public function validateEmail(string $email): void
+    // {
+    //     // validamos el formato: tiene @, tiene un dominio, dominios permitidos
+    //     // Implementación para validar el email
+
+    // }
 }
