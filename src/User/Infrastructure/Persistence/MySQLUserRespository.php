@@ -4,27 +4,31 @@ declare(strict_types=1);
 
 namespace Src\User\Infrastructure\Persistence;
 
+use PDO;
 use Src\User\Domain\Model\User;
 use Src\Shader\Infrastructure\Database\Conexion;
 use Src\User\Domain\Repository\UserRepositoryInterface;
 
 class MySQLUserRespository implements UserRepositoryInterface
 {
-    public function getAll(array $params = []): array
+    private PDO $pdo;
+    public function __construct()
     {
         $conexion = new Conexion();
-        $pdo = $conexion->getConexion();
+        $this->pdo = $conexion->getConexion();
+    }
 
-        // Construir la consulta base
+    public function getAll(array $params = []): array
+    {
+        $pdo = $this->pdo;
+
         $query = 'SELECT id, email, password FROM users';
 
-        // Agregar filtros si se proporcionan
         $filters = $this->buildFilters($params);
         if (!empty($filters['conditions'])) {
             $query .= ' WHERE ' . implode(' AND ', $filters['conditions']);
         }
 
-        // Preparar y ejecutar la consulta
         $statement = $pdo->prepare($query);
         foreach ($filters['bindings'] as $placeholder => $value) {
             $statement->bindValue($placeholder, $value);
@@ -32,7 +36,6 @@ class MySQLUserRespository implements UserRepositoryInterface
         $statement->execute();
         $results = $statement->fetchAll();
 
-        // Mapear los resultados a objetos User
         $users = [];
         foreach ($results as $row) {
             $users[] = new User(
@@ -47,10 +50,7 @@ class MySQLUserRespository implements UserRepositoryInterface
 
     public function getById(int $userId): ?User
     {
-        $conexion = new Conexion();
-        $pdo = $conexion->getConexion();
-
-        // Consulta para obtener el usuario por ID
+        $pdo = $this->pdo;
         $query = 'SELECT id, email, password FROM users WHERE id = :id';
 
         // Preparar y ejecutar la consulta
@@ -75,9 +75,7 @@ class MySQLUserRespository implements UserRepositoryInterface
 
     public function register(string $email, string $password): void
     {
-        $conexion = new Conexion();
-        $pdo = $conexion->getConexion();
-
+        $pdo = $this->pdo;
         $query = 'INSERT INTO users (email, password) VALUES (:email, :password)';
         $stmt = $pdo->prepare($query);
         $stmt->bindParam(':email', $email);
@@ -87,17 +85,28 @@ class MySQLUserRespository implements UserRepositoryInterface
 
     public function updateEmail(int $userId, string $email): void
     {
-        // Implementación para actualizar el email de un usuario
+        $pdo = $this->pdo;
+        $stmt = $pdo->prepare('UPDATE users SET email = :email WHERE id = :id');
+        $stmt->bindValue(':id', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue(':email', $email, \PDO::PARAM_STR);
+        $stmt->execute();
     }
 
     public function updatePassword(int $userId, string $password): void
     {
-        // Implementación para actualizar la contraseña de un usuario
+        $pdo = $this->pdo;
+        $stmt = $pdo->prepare('UPDATE users SET password = :password WHERE id = :id');
+        $stmt->bindValue(':id', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue(':password', $password, \PDO::PARAM_STR);
+        $stmt->execute();
     }
 
     public function delete(int $userId): void
     {
-        // Implementación para eliminar un usuario
+        $pdo = $this->pdo;
+        $stmt = $pdo->prepare('DELETE FROM users WHERE id = :id');
+        $stmt->bindValue(':id', $userId, \PDO::PARAM_INT);
+        $stmt->execute();
     }
 
     private function buildFilters(array $params): array

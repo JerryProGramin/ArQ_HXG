@@ -7,8 +7,8 @@ namespace Src\User\Aplication\DTO;
 class UserRequest
 {
     public function __construct(
-        public string $email,
-        public string $password,
+        public ?string $email = null,
+        public ?string $password = null,
     ) {
         //$this->validateEmail($email);
     }

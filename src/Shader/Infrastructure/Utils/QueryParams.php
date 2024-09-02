@@ -11,13 +11,28 @@ class QueryParams
      * Validar que exista dicho parámetro. -> success
      * Que me devuelva un valor por defecto en caso de que no exista. -> success
      */
-    public static function query(string $parameter, ?string $default = null): ?string
+    // public static function query(string $parameter, ?string $default = null): ?string
+    // {
+    //     if (isset($_GET[$parameter])) {
+    //         $param = $_GET[$parameter];
+    //         return $param;
+    //     } else {
+    //         return $default;
+    //     }
+    // }
+    public static function query(array $allowedFilters): array
     {
-        if (isset($_GET[$parameter])) {
-            $param = $_GET[$parameter];
-            return $param;
-        } else {
-            return $default;
+        $params = [];
+
+        foreach ($allowedFilters as $filter => $operator) {
+            if (isset($_GET[$filter])) {
+                $params[$filter] = [
+                    'operator' => $operator,
+                    'value' => $_GET[$filter],
+                ];
+            }
         }
+
+        return $params;
     }
 }

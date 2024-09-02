@@ -22,11 +22,13 @@ class CategoryController
 
     public function index()
     {
-        $name = QueryParams::query('name');
-        $params['name'] = [
-            'operator' => 'LIKE',
-            'value' => $name,
+        $allowedFilters = [
+            'name' => 'LIKE',
+            'description' => '=',
         ];
+
+        $params = QueryParams::query($allowedFilters);
+        
         $getCategories = $this->container->get(GetCategories::class);
         $categories = $getCategories->execute($params);
 

@@ -16,6 +16,9 @@ class RegisterCategory
 
     public function execute(CategoryRequest $request): void
     {
-        $this->categoryRepository->register($request->name, $request->description);
+        $this->categoryRepository->register(
+            $request->name, 
+            $request->description
+        );
     }
 }
